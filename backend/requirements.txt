@@ -1,0 +1,8 @@
+pydantic-ai[openai]
+langchain-community
+duckduckgo-search
+ddgs
+python-dotenv
+fastapi
+uvicorn
+chromadb
