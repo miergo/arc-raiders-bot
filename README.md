@@ -1,4 +1,4 @@
-# ARC-RAIDERS WikiBot
+# ARC-RAIDERS WikiBotttttttt
 
 A wiki-style chatbot for ARC Raiders powered by a local Ollama LLM, DuckDuckGo web search, and a ChromaDB RAG cache. Python/FastAPI backend + React frontend.
 
