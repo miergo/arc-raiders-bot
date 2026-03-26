@@ -1,0 +1,202 @@
+{
+  "_comment": [
+    "GOLDEN EVALUATION DATASET — ARC Raiders WikiBot",
+    "",
+    "WHAT IS THIS?",
+    "  A set of test questions with expected keywords that a correct answer",
+    "  should contain. This is the foundation of systematic RAG evaluation.",
+    "",
+    "WHY KEYWORDS INSTEAD OF FULL EXPECTED ANSWERS?",
+    "  LLM answers are non-deterministic — the exact wording changes every",
+    "  time. Checking for specific keywords (weapon names, map names, game",
+    "  mechanics) is a robust way to verify the answer is on-topic and",
+    "  contains the right information without brittle exact-match checks.",
+    "",
+    "HOW TO USE:",
+    "  Run: python run_eval.py",
+    "  The script loads this file, asks each question through the pipeline,",
+    "  and checks how many expected keywords appear in the answer.",
+    "",
+    "HOW TO IMPROVE THIS DATASET:",
+    "  - Add more questions covering edge cases and new game updates",
+    "  - Add 'category' tags to group questions by topic",
+    "  - Add 'difficulty' to track easy vs hard questions separately",
+    "  - Eventually add full expected answers for deeper comparison"
+  ],
+  "questions": [
+    {
+      "id": "weapons-ferro",
+      "question": "What is the Ferro in ARC Raiders?",
+      "category": "weapons",
+      "expected_keywords": [
+        "weapon",
+        "battle rifle",
+        "ARC Raiders"
+      ]
+    },
+    {
+      "id": "weapons-tempest",
+      "question": "How does the Tempest weapon work in ARC Raiders?",
+      "category": "weapons",
+      "expected_keywords": [
+        "Tempest",
+        "weapon",
+        "ARC Raiders"
+      ]
+    },
+    {
+      "id": "weapons-stitcher",
+      "question": "What type of weapon is the Stitcher?",
+      "category": "weapons",
+      "expected_keywords": [
+        "Stitcher",
+        "weapon"
+      ]
+    },
+    {
+      "id": "maps-blue-gate",
+      "question": "What can you tell me about the Blue Gate map?",
+      "category": "maps",
+      "expected_keywords": [
+        "Blue Gate",
+        "map"
+      ]
+    },
+    {
+      "id": "maps-stella-montis",
+      "question": "Describe the Stella Montis map in ARC Raiders.",
+      "category": "maps",
+      "expected_keywords": [
+        "Stella Montis",
+        "map"
+      ]
+    },
+    {
+      "id": "maps-dam-battlegrounds",
+      "question": "What is Dam Battlegrounds map in ARC Raiders?",
+      "category": "maps",
+      "expected_keywords": [
+        "Dam Battlegrounds",
+        "map"
+      ]
+    },
+    {
+      "id": "mechanics-extraction",
+      "question": "How does extraction work in ARC Raiders?",
+      "category": "mechanics",
+      "expected_keywords": [
+        "extract",
+        "elevator",
+        "Speranza"
+      ]
+    },
+    {
+      "id": "mechanics-escalation",
+      "question": "What are some map modifiers in ARC Raiders?",
+      "category": "mechanics",
+      "expected_keywords": [
+        "Hurricane",
+        "Electromagnet",
+        "Night Raids"
+      ]
+    },
+    {
+      "id": "mechanics-crafting",
+      "question": "How does crafting bandages at Speranza?",
+      "category": "mechanics",
+      "expected_keywords": [
+        "workbench",
+        "bandages"
+      ]
+    },
+    {
+      "id": "enemies-arc-types",
+      "question": "What types of ARC enemies are in the game?",
+      "category": "enemies",
+      "expected_keywords": [
+        "WASP",
+        "Hornet",
+        "Rocketeer"
+      ]
+    },
+    {
+      "id": "enemies-colossus",
+      "question": "How do you fight Rocketeer in ARC Raiders?",
+      "category": "enemies",
+      "expected_keywords": [
+        "Rocketeer",
+        "ARC"
+      ]
+    },
+    {
+      "id": "lore-setting",
+      "question": "What is the story setting of ARC Raiders?",
+      "category": "lore",
+      "expected_keywords": [
+        "Earth",
+        "ARC",
+        "alien",
+        "2180"
+      ]
+    },
+    {
+      "id": "lore-speranza",
+      "question": "What is Speranza in ARC Raiders?",
+      "category": "lore",
+      "expected_keywords": [
+        "Speranza",
+        "base",
+        "underground"
+      ]
+    },
+    {
+      "id": "gameplay-skills",
+      "question": "What skill trees are available in ARC Raiders?",
+      "category": "gameplay",
+      "expected_keywords": [
+        "skill",
+        "Survival",
+        "Mobility"
+      ]
+    },
+    {
+      "id": "gameplay-safe-pocket",
+      "question": "What is the safe pocket mechanic in ARC Raiders?",
+      "category": "gameplay",
+      "expected_keywords": [
+        "safe pocket",
+        "item",
+        "protect"
+      ]
+    },
+    {
+      "id": "meta-developer",
+      "question": "Who developed ARC Raiders and when was it released?",
+      "category": "meta",
+      "expected_keywords": [
+        "Embark Studios",
+        "2025"
+      ]
+    },
+    {
+      "id": "meta-platforms",
+      "question": "What platforms is ARC Raiders available on?",
+      "category": "meta",
+      "expected_keywords": [
+        "PC",
+        "PS5",
+        "Xbox"
+      ]
+    },
+    {
+      "id": "comparison-weapons",
+      "question": "Is the Ferro better than the Anvil for PvP in ARC Raiders?",
+      "category": "comparison",
+      "expected_keywords": [
+        "Ferro",
+        "Anvil",
+        "weapon"
+      ]
+    }
+  ]
+}

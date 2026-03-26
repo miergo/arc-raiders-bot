@@ -1,0 +1,108 @@
+# =============================================================================
+# docker-compose.yml — ARC Raiders WikiBot (full stack)
+# =============================================================================
+#
+# WHAT THIS DOES:
+#   Runs the entire application with one command: `docker compose up`
+#   Three services work together:
+#
+#   1. app      — The Python backend + built React frontend (port 8000)
+#   2. mlflow   — MLflow tracking server for traces & metrics (port 5000)
+#   3. ollama   — Local LLM server that runs llama3.1:8b (port 11434)
+#
+# FIRST TIME SETUP:
+#   After `docker compose up`, Ollama starts empty. You need to pull the
+#   models once:
+#     docker compose exec ollama ollama pull llama3.1:8b
+#     docker compose exec ollama ollama pull nomic-embed-text
+#
+# THEN:
+#   Open http://localhost:8001 for the chat UI
+#   Open http://localhost:5001 for the MLflow dashboard
+#
+# WHY DOCKER COMPOSE?
+#   Without it you'd need to manually start 3 processes in 3 terminals,
+#   configure network addresses between them, and manage their lifecycle.
+#   Compose handles all of that declaratively in this single file.
+# =============================================================================
+
+services:
+
+  # ---------------------------------------------------------------------------
+  # app — The main application (FastAPI backend + React frontend)
+  # ---------------------------------------------------------------------------
+  app:
+    build: .
+    ports:
+      - "8001:8000"
+    environment:
+      # Inside Docker, services talk to each other by service name (not
+      # localhost). So "ollama" resolves to the Ollama container's IP,
+      # and "mlflow" resolves to the MLflow container's IP.
+      - OLLAMA_BASE_URL=http://ollama:11434/v1
+      - OLLAMA_MODEL=llama3.1:8b
+      - EMBEDDING_MODEL=nomic-embed-text
+      - MLFLOW_TRACKING_URI=http://mlflow:5000
+      - MLFLOW_EXPERIMENT_NAME=arc-raiders-rag
+      - CHROMA_DATA_DIR=/app/data/chroma
+    volumes:
+      # Persist ChromaDB data across container restarts so the knowledge
+      # cache isn't lost every time you rebuild.
+      - chroma-data:/app/data/chroma
+    # condition: service_healthy means the app waits until MLflow's
+    # healthcheck passes (HTTP 200), not just until the container starts.
+    # This prevents the "MLflow not reachable" warning on startup.
+    depends_on:
+      mlflow:
+        condition: service_healthy
+      ollama:
+        condition: service_started
+
+  # ---------------------------------------------------------------------------
+  # mlflow — Tracking server for experiment traces and metrics
+  # ---------------------------------------------------------------------------
+  mlflow:
+    image: python:3.13-slim
+    ports:
+      - "5001:5000"
+    volumes:
+      # Persist MLflow data (experiments, runs, traces) across restarts.
+      - mlflow-data:/mlflow
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:5000/version')"]
+      interval: 5s
+      timeout: 3s
+      retries: 30
+      start_period: 30s
+    # --allowed-hosts "*" tells MLflow to accept requests from any Host
+    # header. Without this, MLflow 3.5+ rejects requests arriving via the
+    # Docker service name (Host: mlflow:5000) with 403 Forbidden because
+    # it only trusts localhost by default. Safe here — private Docker network.
+    command: ["bash", "-c", "pip install --quiet mlflow && mlflow server --host 0.0.0.0 --port 5000 --backend-store-uri sqlite:///mlflow/mlflow.db --default-artifact-root /mlflow/artifacts --allowed-hosts '*'"]
+
+  # ---------------------------------------------------------------------------
+  # ollama — Local LLM inference server
+  # ---------------------------------------------------------------------------
+  ollama:
+    image: ollama/ollama:latest
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+    ports:
+      - "11435:11434"
+    volumes:
+      # Persist downloaded models so they survive container restarts.
+      # Without this, you'd have to re-pull llama3.1:8b every time.
+      - ollama-data:/root/.ollama
+
+# Named volumes — Docker manages these on disk. They persist between
+# `docker compose down` and `docker compose up`. To fully wipe them,
+# run `docker compose down -v`.
+volumes:
+  chroma-data:
+  mlflow-data:
+  ollama-data:

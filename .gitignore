@@ -1,0 +1,68 @@
+# =============================================================================
+# ROOT .gitignore — ARC Raiders WikiBot
+# =============================================================================
+# This file tells git which files/folders to ignore across the whole repo.
+# Without it, build artifacts, secrets, and temporary files pollute your
+# commits and can leak sensitive data (like API keys in .env).
+# =============================================================================
+
+# ---------------------------------------------------------------------------
+# Python
+# ---------------------------------------------------------------------------
+# __pycache__ and .pyc files are compiled bytecode Python creates at runtime.
+# They're machine-specific and should never be committed.
+__pycache__/
+*.pyc
+*.pyo
+
+# Virtual environments — these contain installed packages and are recreated
+# with `pip install -r requirements.txt`, so they don't belong in git.
+.venv/
+venv/
+env/
+
+# ---------------------------------------------------------------------------
+# Environment & secrets
+# ---------------------------------------------------------------------------
+# .env files contain secrets (API keys, database URLs). Only .env.example
+# (with placeholder values) should be committed so others know what vars
+# to set.
+.env
+.env.local
+.env.production
+
+# ---------------------------------------------------------------------------
+# Node.js / Frontend
+# ---------------------------------------------------------------------------
+# node_modules is huge (hundreds of MB) and recreated with `npm install`.
+node_modules/
+
+# Build output from `npm run build` — generated, not source code.
+dist/
+
+# ---------------------------------------------------------------------------
+# MLflow
+# ---------------------------------------------------------------------------
+# Local MLflow tracking data. These are created when the MLflow server runs
+# and contain experiment logs, metrics, and the SQLite database.
+# They can be large and are environment-specific.
+mlruns/
+mlflow.db
+
+# ---------------------------------------------------------------------------
+# ChromaDB (vector store)
+# ---------------------------------------------------------------------------
+# Persistent vector database files. These are generated at runtime as the
+# bot answers questions and caches Q&A pairs.
+backend/data/
+
+# ---------------------------------------------------------------------------
+# IDE & OS
+# ---------------------------------------------------------------------------
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*~

@@ -1,0 +1,39 @@
+# =============================================================================
+# .dockerignore — ARC Raiders WikiBot
+# =============================================================================
+# Similar to .gitignore, but for Docker. When you run `docker build`, Docker
+# sends the entire project directory to the build daemon as "context". This
+# file excludes large/unnecessary files from that context, making builds
+# faster and the image smaller.
+# =============================================================================
+
+# Git history — not needed in the image
+.git
+.gitignore
+
+# Virtual environments — we install fresh deps in the Dockerfile
+.venv
+backend/.venv
+
+# Node modules — the Dockerfile runs `npm ci` which installs them fresh
+frontend/node_modules
+
+# Runtime data — should not be baked into the image
+backend/data
+backend/mlruns
+backend/mlflow.db
+
+# Python bytecode cache — rebuilt at runtime
+__pycache__
+*.pyc
+
+# IDE and OS files
+.vscode
+.idea
+.DS_Store
+
+# Docker and CI files (not needed inside the image)
+Dockerfile
+docker-compose.yml
+.dockerignore
+.github

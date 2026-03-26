@@ -1,0 +1,85 @@
+# =============================================================================
+# GitHub Actions CI Pipeline — ARC Raiders WikiBot
+# =============================================================================
+#
+# WHAT THIS DOES:
+#   Runs automatically on every push or pull request to the main branch.
+#   Two jobs check code quality:
+#     1. lint-backend:  Checks Python code style with Ruff
+#     2. lint-frontend: Checks TypeScript/React code with ESLint
+#
+# WHY CI?
+#   CI (Continuous Integration) catches problems early — before they reach
+#   production. If a linter error is introduced, the PR gets a red X and
+#   you know to fix it before merging. This is standard DevOps practice.
+#
+# WHY NOT RUN THE EVAL SCRIPT IN CI?
+#   The eval script needs a running Ollama server with a 5GB model loaded,
+#   which isn't practical in GitHub's free-tier runners. The eval is designed
+#   to run locally before pushing changes. A future improvement would be to
+#   add a self-hosted runner with GPU access for automated eval.
+# =============================================================================
+
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  # ---------------------------------------------------------------------------
+  # Job 1: Lint Python backend with Ruff
+  # ---------------------------------------------------------------------------
+  # Ruff is an extremely fast Python linter (written in Rust). It checks for
+  # style issues, common bugs, and import problems in seconds.
+  lint-backend:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      # Install only the linter — we don't need the full dependency set
+      # just to check code style, which makes this job fast (~10 seconds).
+      - name: Install Ruff
+        run: pip install ruff
+
+      - name: Run Ruff linter
+        run: ruff check .
+
+  # ---------------------------------------------------------------------------
+  # Job 2: Lint React frontend with ESLint
+  # ---------------------------------------------------------------------------
+  # ESLint checks TypeScript/React code for common mistakes like unused
+  # variables, missing dependencies in hooks, and style violations.
+  lint-frontend:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+          cache-dependency-path: frontend/package-lock.json
+
+      # npm ci is like npm install but:
+      # - Uses the exact versions from package-lock.json (reproducible)
+      # - Faster in CI because it skips the dependency resolution step
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run ESLint
+        run: npm run lint
