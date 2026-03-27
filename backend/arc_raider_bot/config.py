@@ -9,6 +9,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+# This file lives at arc_raider_bot/config.py, so .parent.parent resolves to backend/.
 BACKEND_DIR = Path(__file__).resolve().parent.parent
 
 OLLAMA_BASE_URL: str = os.getenv("OLLAMA_BASE_URL", "http://localhost:11434/v1")

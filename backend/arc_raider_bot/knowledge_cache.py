@@ -28,13 +28,14 @@ class KnowledgeCache:
         embedding_model = embedding_model or EMBEDDING_MODEL
         ollama_url = ollama_url or OLLAMA_BASE_URL
 
+        # Ollama exposes embeddings at /api/embeddings, not the OpenAI-compatible /v1 path.
         embed_url = ollama_url.replace("/v1", "/api/embeddings")
 
-        self._ef = OllamaEmbeddingFunction(model_name=embedding_model, url=embed_url)
+        self._embed_fn = OllamaEmbeddingFunction(model_name=embedding_model, url=embed_url)
         self._client = chromadb.PersistentClient(path=data_dir)
         self._collection = self._client.get_or_create_collection(
             name="arc_raiders_qa",
-            embedding_function=self._ef,
+            embedding_function=self._embed_fn,
             metadata={"hnsw:space": "cosine"},
         )
 
@@ -73,12 +74,14 @@ class KnowledgeCache:
             include=["metadatas", "documents", "distances"],
         )
 
+        # ChromaDB returns batched results (one list per query).
+        # We only send one query, so [0] grabs that single batch.
+        documents = results["documents"][0]
+        metadatas = results["metadatas"][0]
+        distances = results["distances"][0]
+
         hits: list[CachedQA] = []
-        for doc, meta, dist in zip(
-            results["documents"][0],
-            results["metadatas"][0],
-            results["distances"][0],
-        ):
+        for doc, meta, dist in zip(documents, metadatas, distances):
             similarity = 1.0 - dist
             if similarity >= threshold:
                 hits.append(CachedQA(

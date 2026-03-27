@@ -1,4 +1,11 @@
-"""In-memory LRU session store for multi-turn conversation histories."""
+"""In-memory LRU session store for multi-turn conversation histories.
+
+LRU eviction via OrderedDict:
+    - On every access we call move_to_end() to mark the session as "recently used".
+    - When the dict exceeds MAX_SESSIONS, we pop from the *front* (oldest / least
+      recently used) until we're back under the limit.
+    - A threading lock protects the dict so concurrent requests don't corrupt it.
+"""
 
 from __future__ import annotations
 
